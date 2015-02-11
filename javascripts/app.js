@@ -1,8 +1,14 @@
 (function($) {
 
 var FilmLocation = Backbone.Model.extend({
-	defaults: {
-		'_marker': null
+	parse: function(response) {
+		var geometry = response.geometry;
+		var latlng = new google.maps.LatLng(geometry.y, geometry.x);
+		if (isNaN(latlng.lat()) || isNaN(latlng.lng())) {
+			latlng = null;
+		}
+		response['_latlng'] = latlng;
+		return response;
 	}
 });
 
@@ -15,17 +21,43 @@ var FilmLocationCollection = Backbone.Collection.extend({
 	parse: function(response) {
 		var models = response.features;
 		return response.features;
+	},
+	getLatLngs: function() {
+		return this.pluck('_latlng');
 	}
 });
 
 var FilmHeatMap = Backbone.View.extend({
-	initialize: function() {
+	initialize: function(options) {
+		// collection of FilmLocations
+		this.locations = options.locations;
+		
+		// google map
 		var mapOptions = {
 			zoom: 13,
 			center: new google.maps.LatLng(35.1107, -106.6099),
 			mapTypeId: google.maps.MapTypeId.SATELLITE
 		};
 		this.map = new google.maps.Map(this.el, mapOptions);
+		this.heatmap = new google.maps.visualization.HeatmapLayer({
+			opacity: 0.9
+		});
+
+		this.listenTo(this.locations, 'sync', this.render);
+	},
+	render: function() {
+		this.clear();
+		
+		var latlngs = this.locations.getLatLngs();
+		var pointArray = new google.maps.MVCArray(latlngs);
+		
+		this.heatmap.setData(pointArray);
+		this.heatmap.setMap(this.map);
+	},
+	clear: function() {
+		if (this.heatmap) {
+			this.heatmap.setMap(null);
+		}
 	}
 });
 
@@ -39,6 +71,14 @@ var FilmLocationsApp = Backbone.View.extend({
 		
 		// fetch data
 		this.collections.locations.fetch();
+		
+		// initialize map
+		this.views = {
+			heatmap: new FilmHeatMap({
+				el: $('#map')[0],
+				locations: this.collections.locations
+			})
+		};
 		
 	}
 });
