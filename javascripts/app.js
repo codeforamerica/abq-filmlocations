@@ -15,7 +15,8 @@ var FilmLocation = Backbone.Model.extend({
 var FilmLocationCollection = Backbone.Collection.extend({
 	model: FilmLocation,
 	url: function() {
-		var url = '/abq-filmlocations/data/filmlocationsJSON_ALL.json';
+		//var url = '/abq-filmlocations/data/filmlocationsJSON_ALL.json';
+		var url = 'http://coagisweb.cabq.gov/arcgis/rest/services/public/FilmLocations/MapServer/0/query?where=1%3D1&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=4326&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&f=pjson';
 		return url;
 	},
 	parse: function(response) {
@@ -40,7 +41,8 @@ var FilmHeatMap = Backbone.View.extend({
 		};
 		this.map = new google.maps.Map(this.el, mapOptions);
 		this.heatmap = new google.maps.visualization.HeatmapLayer({
-			opacity: 0.9
+			opacity: 0.9,
+			radius: 20
 		});
 
 		this.listenTo(this.locations, 'sync', this.render);
