@@ -35,9 +35,9 @@ var FilmHeatMap = Backbone.View.extend({
 		
 		// google map
 		var mapOptions = {
-			zoom: 13,
+			zoom: 11,
 			center: new google.maps.LatLng(35.1107, -106.6099),
-			mapTypeId: google.maps.MapTypeId.HYBRID
+			mapTypeId: google.maps.MapTypeId.MAP
 		};
 		this.map = new google.maps.Map(this.el, mapOptions);
 		this.heatmap = new google.maps.visualization.HeatmapLayer({
