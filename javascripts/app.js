@@ -42,7 +42,8 @@ var FilmHeatMap = Backbone.View.extend({
 		this.map = new google.maps.Map(this.el, mapOptions);
 		this.heatmap = new google.maps.visualization.HeatmapLayer({
 			opacity: 0.9,
-			radius: 20
+			radius: 20,
+			gradient: ['white', 'grey', 'black']
 		});
 
 		this.listenTo(this.locations, 'sync', this.render);
