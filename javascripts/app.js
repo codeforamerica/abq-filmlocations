@@ -37,12 +37,16 @@ var FilmHeatMap = Backbone.View.extend({
 		var mapOptions = {
 			zoom: 13,
 			center: new google.maps.LatLng(35.1107, -106.6099),
-			mapTypeId: google.maps.MapTypeId.SATELLITE
+			mapTypeId: google.maps.MapTypeId.HYBRID
 		};
 		this.map = new google.maps.Map(this.el, mapOptions);
 		this.heatmap = new google.maps.visualization.HeatmapLayer({
+			//dissipating: false,
 			opacity: 0.9,
-			radius: 20
+			radius: 20,
+			//gradient: ['transparent', 'green', 'blue', 'orange', 'red']
+			//gradient: ['transparent', 'red']
+			//gradient: ['transparent', '#333', '#666', '#999', '#000']
 		});
 
 		this.listenTo(this.locations, 'sync', this.render);
