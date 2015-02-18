@@ -6,21 +6,43 @@ layout: default
 	
 	<div id="map" class="map"></div>
 	
-	<form class="row">
-		<div class="small-3 columns">
-			<label for="film-type" class="right inline">Type</label>
+	<form>
+		<div class="row">
+			<div class="small-3 columns">
+				<label for="film-type" class="right inline">Type</label>
+			</div>
+			<div class="small-9 columns">
+				<select name="type" id="film-type">
+					<option value="" disabled="disabled">Loading&hellip;</option>
+				</select>
+			</div>
 		</div>
-		<div class="small-9 columns">
-			<select name="type" id="film-type">
-				<option value="" disabled="disabled">Loading&hellip;</option>
-			</select>
+		<div class="row">
+			<div class="small-3 columns">
+				<label for="film-year" class="right inline">Year</label>
+			</div>
+			<div class="small-9 columns">
+				<select name="year" id="film-year">
+					<option value="" disabled="disabled">Loading&hellip;</option>
+				</select>
+			</div>
+		</div>
+		<div class="row">
+			<div class="small-3 columns">
+				<label for="film-title" class="right inline">Title</label>
+			</div>
+			<div class="small-9 columns">
+				<select name="title" id="film-title">
+					<option value="" disabled="disabled">Loading&hellip;</option>
+				</select>
+			</div>
 		</div>
 	</form>
-
+	
 </div>
 
-<script type="text/template" id="film-type-template">
-	<option value="<%= value %>"><%= type %> (<%= count %>)</option>
+<script type="text/template" id="filter-option-template">
+	<option value="<%= value %>"><%= label %> (<%= count %>)</option>
 </script>
 
 
