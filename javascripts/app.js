@@ -49,7 +49,7 @@ var FilmHeatMap = Backbone.View.extend({
 			//gradient: ['transparent', '#333', '#666', '#999', '#000']
 		});
 
-		this.listenTo(this.locations, 'sync', this.render);
+		this.listenTo(this.locations, 'reset', this.render);
 	},
 	render: function() {
 		this.clear();
@@ -68,29 +68,111 @@ var FilmHeatMap = Backbone.View.extend({
 });
 
 var FilmLocationsApp = Backbone.View.extend({
+	events: {
+		'change #film-type': 'render',
+		'change #film-year': 'render'
+	},
+		
 	initialize: function() {
+		
+		// DOM elements
+		this.$filmType = this.$el.find('#film-type');
 		
 		// create collections
 		this.collections = {
-			locations: new FilmLocationCollection([], {})
+			locations: new FilmLocationCollection([], {}),
+			filteredLocations: new FilmLocationCollection([], {})
 		};
-		
-		// fetch data
-		this.collections.locations.fetch();
 		
 		// initialize map
 		this.views = {
 			heatmap: new FilmHeatMap({
 				el: $('#map')[0],
-				locations: this.collections.locations
+				locations: this.collections.filteredLocations
 			})
 		};
 		
+		// when data from the server comes in
+		this.listenTo(this.collections.locations, 'sync', this.onSync);
+		
+		// fetch data
+		this.collections.locations.fetch();
+
+	},
+	
+	onSync: function() {
+		this.populateFilters();
+		this.render();
+	},
+	
+	populateFilters: function() {
+		var template = _.template($('#film-type-template').html());
+		var locations = this.collections.locations;
+		
+		// mapping of film Type and corresponding count
+		var filmTypes = locations.countBy(function(location) {
+			return location.attributes.attributes.Type
+		});
+		
+		// convert to array so that we can sort
+		var filmTypesArray = _.map(filmTypes, function(count, filmType) {
+			return {
+				count: count,
+				type: filmType,
+				value: filmType
+			};
+		});
+		
+		// sort alphabetically by type
+		filmTypesArray = _.sortBy(filmTypesArray, 'type');
+		
+		// add a total at the beginning
+		filmTypesArray.unshift({
+			count: locations.length,
+			type: 'All',
+			value: ''
+		});
+		
+		// get a combined HTML string of the templatized items
+		var htmlArray = _.map(filmTypesArray, function(item) {
+			return template(item);
+		});
+		var html = htmlArray.join('');
+		
+		// render in DOM
+		this.$filmType.html(html);
+	},
+	
+	render: function() {
+		// technique from this website:
+		// http://tech.pro/tutorial/1519/rendering-a-filtered-backbonecollection
+		
+		// status of the filters
+		var filteredType = this.$filmType.val();
+
+		// get the new list of results using the filter for the collection
+		var results = this.collections.locations.filter(function(location) {			
+			var matchesType = false;
+			if (filteredType) {
+				var type = location.get('attributes').Type;
+				matchesType = (type == filteredType);
+			} else {
+				matchesType = true;
+			}
+			return matchesType;
+		});
+		
+		// reset the filtered collection so that it will update and show the new list
+		this.collections.filteredLocations.reset(results);
+		
+		return this;
 	}
 });
 
 $(document).ready(function() {
-	var app = new FilmLocationsApp();
+	var app = new FilmLocationsApp({
+		el: $('#app')[0]
+	});
 	window.app = app;
 });
 

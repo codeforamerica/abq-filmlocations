@@ -2,7 +2,26 @@
 layout: default
 ---
 
-<div id="map" class="map"></div>
+<div id="app">
+	
+	<div id="map" class="map"></div>
+	
+	<form class="row">
+		<div class="small-3 columns">
+			<label for="film-type" class="right inline">Type</label>
+		</div>
+		<div class="small-9 columns">
+			<select name="type" id="film-type">
+				<option value="" disabled="disabled">Loading&hellip;</option>
+			</select>
+		</div>
+	</form>
+
+</div>
+
+<script type="text/template" id="film-type-template">
+	<option value="<%= value %>"><%= type %> (<%= count %>)</option>
+</script>
 
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
